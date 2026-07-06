@@ -18,9 +18,10 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher(storage=MemoryStorage())
 
-    # Rate limiting: 1 запрос/сек на пользователя
-    dp.message.middleware(ThrottlingMiddleware())
-    dp.callback_query.middleware(ThrottlingMiddleware())
+    # Один инстанс — общие счётчики для messages и callbacks
+    throttle = ThrottlingMiddleware()
+    dp.message.middleware(throttle)
+    dp.callback_query.middleware(throttle)
 
     dp.include_router(start.router)
     dp.include_router(concrete.router)
