@@ -145,5 +145,5 @@ BTR-bot-/          ← GitHub repo: artseit7-glitch/BTR-bot-
 - Auto-deploy: Railway подключён к `main`
 
 ## Supabase Project
-- URL: https://ejrtmcbujvsmifhokbnj.supabase.co
-- Project ref: `ejrtmcbujvsmifhokbnj`
+- URL: см. `SUPABASE_URL` в Railway Variables
+- Project ref: см. `SUPABASE_URL` в Railway Variables
