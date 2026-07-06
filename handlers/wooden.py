@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, CallbackQuery
 from calculators.wooden import calculate
+from config import MAX_AREA, MAX_PLINTH_METERS
 from keyboards.main_kb import works_keyboard, consultation_keyboard
 from utils.formatters import format_wooden
 
@@ -29,10 +30,12 @@ async def start_wooden(callback: CallbackQuery, state: FSMContext):
 async def get_wooden_area(message: Message, state: FSMContext):
     try:
         area = float(message.text.replace(",", "."))
-        if area <= 0:
+        if not (0 < area <= MAX_AREA):
             raise ValueError
     except (ValueError, AttributeError):
-        await message.answer("❌ Введите корректное число, например: <b>35.5</b>", parse_mode="HTML")
+        await message.answer(
+            f"❌ Введите число от 1 до {MAX_AREA} (м²), например: <b>35.5</b>", parse_mode="HTML"
+        )
         return
 
     await state.update_data(area=area, selected=[])
@@ -88,10 +91,12 @@ async def calc_wooden(callback: CallbackQuery, state: FSMContext):
 async def get_plinth_meters(message: Message, state: FSMContext):
     try:
         meters = float(message.text.replace(",", "."))
-        if meters <= 0:
+        if not (0 < meters <= MAX_PLINTH_METERS):
             raise ValueError
     except (ValueError, AttributeError):
-        await message.answer("❌ Введите корректное число, например: <b>24</b>", parse_mode="HTML")
+        await message.answer(
+            f"❌ Введите число от 1 до {MAX_PLINTH_METERS} (п.м.), например: <b>24</b>", parse_mode="HTML"
+        )
         return
 
     data = await state.get_data()

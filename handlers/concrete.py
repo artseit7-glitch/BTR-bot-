@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, CallbackQuery
 from calculators.concrete import calculate
+from config import MAX_AREA, MAX_GRAVEL_DEPTH
 from keyboards.main_kb import works_keyboard, consultation_keyboard
 from utils.formatters import format_concrete
 
@@ -29,10 +30,12 @@ async def start_concrete(callback: CallbackQuery, state: FSMContext):
 async def get_concrete_area(message: Message, state: FSMContext):
     try:
         area = float(message.text.replace(",", "."))
-        if area <= 0:
+        if not (0 < area <= MAX_AREA):
             raise ValueError
     except (ValueError, AttributeError):
-        await message.answer("❌ Введите корректное число, например: <b>35.5</b>", parse_mode="HTML")
+        await message.answer(
+            f"❌ Введите число от 1 до {MAX_AREA} (м²), например: <b>35.5</b>", parse_mode="HTML"
+        )
         return
 
     await state.update_data(area=area, selected=[])
@@ -88,10 +91,10 @@ async def calc_concrete(callback: CallbackQuery, state: FSMContext):
 async def get_gravel_depth(message: Message, state: FSMContext):
     try:
         depth = int(message.text.strip())
-        if not (1 <= depth <= 100):
+        if not (1 <= depth <= MAX_GRAVEL_DEPTH):
             raise ValueError
     except (ValueError, AttributeError):
-        await message.answer("❌ Введите целое число от 1 до 100 (в сантиметрах).")
+        await message.answer(f"❌ Введите целое число от 1 до {MAX_GRAVEL_DEPTH} (в сантиметрах).")
         return
 
     data = await state.get_data()
