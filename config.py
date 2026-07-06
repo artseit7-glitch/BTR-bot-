@@ -13,9 +13,13 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 # SERVICE_KEY не экспортируем в модуль — читается напрямую через os.getenv в db-слое
 
 # Лимиты пользовательского ввода
-MAX_AREA = 5_000       # м² — разумный максимум для жилого/коммерческого объекта
+MAX_AREA = 5_000       # м²
 MAX_GRAVEL_DEPTH = 100  # см
 MAX_PLINTH_METERS = 2_000  # п.м.
+
+# Whitelist допустимых видов работ — единственный источник правды
+ALLOWED_CONCRETE_WORKS = frozenset({"screed", "beacons", "gravel", "rebar", "demolition"})
+ALLOWED_WOODEN_WORKS   = frozenset({"lags", "osb", "laminate", "linoleum", "tile", "plinth"})
 
 
 def validate_env() -> None:

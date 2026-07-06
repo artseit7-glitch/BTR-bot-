@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, CallbackQuery
 from calculators.concrete import calculate
-from config import MAX_AREA, MAX_GRAVEL_DEPTH
+from config import MAX_AREA, MAX_GRAVEL_DEPTH, ALLOWED_CONCRETE_WORKS
 from keyboards.main_kb import works_keyboard, consultation_keyboard
 from utils.formatters import format_concrete
 
@@ -50,6 +50,9 @@ async def get_concrete_area(message: Message, state: FSMContext):
 @router.callback_query(ConcreteStates.waiting_works, F.data.startswith("toggle:concrete:"))
 async def toggle_concrete(callback: CallbackQuery, state: FSMContext):
     item = callback.data.split(":")[2]
+    if item not in ALLOWED_CONCRETE_WORKS:
+        await callback.answer()
+        return
     data = await state.get_data()
     selected = set(data.get("selected", []))
     selected.discard(item) if item in selected else selected.add(item)

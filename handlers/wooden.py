@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, CallbackQuery
 from calculators.wooden import calculate
-from config import MAX_AREA, MAX_PLINTH_METERS
+from config import MAX_AREA, MAX_PLINTH_METERS, ALLOWED_WOODEN_WORKS
 from keyboards.main_kb import works_keyboard, consultation_keyboard
 from utils.formatters import format_wooden
 
@@ -50,6 +50,9 @@ async def get_wooden_area(message: Message, state: FSMContext):
 @router.callback_query(WoodenStates.waiting_works, F.data.startswith("toggle:wooden:"))
 async def toggle_wooden(callback: CallbackQuery, state: FSMContext):
     item = callback.data.split(":")[2]
+    if item not in ALLOWED_WOODEN_WORKS:
+        await callback.answer()
+        return
     data = await state.get_data()
     selected = set(data.get("selected", []))
     selected.discard(item) if item in selected else selected.add(item)
