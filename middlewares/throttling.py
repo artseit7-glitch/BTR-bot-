@@ -6,17 +6,13 @@ from typing import Any, Awaitable, Callable, Dict, Tuple
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, TelegramObject
 
+import utils.logger as logger
+
 DAILY_CALC_LIMIT = 50
 CALC_CALLBACKS = frozenset({"calc:concrete", "calc:wooden"})
 
 
 class ThrottlingMiddleware(BaseMiddleware):
-    """
-    Два уровня защиты от злоупотреблений:
-    1. Per-second: 1 событие/сек на пользователя (спам-защита)
-    2. Daily: не более DAILY_CALC_LIMIT расчётов в сутки на пользователя
-    """
-
     RATE_LIMIT = 1.0
 
     def __init__(self):
@@ -26,7 +22,7 @@ class ThrottlingMiddleware(BaseMiddleware):
     def _check_daily(self, user_id: int) -> bool:
         return self._daily_counts[(user_id, date.today())] < DAILY_CALC_LIMIT
 
-    def _increment_daily(self, user_id: int) -> None:
+    def _increment_daily(self, user_id: int) -> int:
         key = (user_id, date.today())
         self._daily_counts[key] += 1
         if self._daily_counts[key] % 20 == 0:
@@ -34,6 +30,7 @@ class ThrottlingMiddleware(BaseMiddleware):
             for k in list(self._daily_counts):
                 if k[1] < today:
                     del self._daily_counts[k]
+        return self._daily_counts[key]
 
     async def __call__(
         self,
@@ -48,12 +45,15 @@ class ThrottlingMiddleware(BaseMiddleware):
         # Уровень 1: per-second throttle
         now = time.monotonic()
         if now - self._last_seen[user.id] < self.RATE_LIMIT:
+            logger.rate_limited(user.id, user.username)
             return
         self._last_seen[user.id] = now
 
-        # Уровень 2: daily calc limit — только на кнопке "Рассчитать"
+        # Уровень 2: daily calc limit
         if isinstance(event, CallbackQuery) and event.data in CALC_CALLBACKS:
             if not self._check_daily(user.id):
+                count = self._daily_counts[(user.id, date.today())]
+                logger.daily_limit_hit(user.id, user.username, count)
                 await event.answer(
                     f"⛔ Лимит {DAILY_CALC_LIMIT} расчётов в сутки исчерпан.\n"
                     "Нажмите 📲 для консультации — мы поможем вручную!",

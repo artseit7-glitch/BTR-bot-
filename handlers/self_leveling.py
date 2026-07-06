@@ -6,6 +6,7 @@ from calculators.self_leveling import calculate
 from config import MAX_AREA
 from keyboards.main_kb import consultation_keyboard
 from utils.formatters import format_self_leveling
+import utils.logger as logger
 
 router = Router()
 
@@ -37,6 +38,7 @@ async def get_area(message: Message, state: FSMContext):
         return
 
     total = calculate(area)["self_leveling"]
+    logger.calc_ok(message.from_user.id, message.from_user.username, "self_leveling", area)
     await message.answer(
         format_self_leveling(area, total),
         reply_markup=consultation_keyboard(),
