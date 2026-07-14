@@ -66,6 +66,18 @@ CREATE POLICY "anyone_can_read_active_prices"
 -- Запись только через service_role (обновление прайса из бэкенда)
 
 -- ============================================================
+-- ТАБЛИЦА: история диалогов с AI-ассистентом (Этап 3)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS conversations (
+    user_id     BIGINT PRIMARY KEY,   -- Telegram user_id
+    messages    JSONB     NOT NULL DEFAULT '[]',
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Доступ только через service_role (бот) — переписка приватная
+ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
+
+-- ============================================================
 -- ЗАПОЛНЕНИЕ: стартовые цены на материалы (ориентир)
 -- ============================================================
 INSERT INTO material_prices (category, key, name, unit, price_min, price_max) VALUES

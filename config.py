@@ -12,6 +12,9 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 # SERVICE_KEY не экспортируем в модуль — читается напрямую через os.getenv в db-слое
 
+# OpenAI (Этап 3 — AI-ассистент)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 # Лимиты пользовательского ввода
 MAX_AREA = 5_000       # м²
 MAX_GRAVEL_DEPTH = 100  # см

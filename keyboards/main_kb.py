@@ -21,9 +21,10 @@ WOODEN_WORKS = {
 
 def main_menu() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🧱 Бетонные полы",  callback_data="floor:concrete")],
-        [InlineKeyboardButton(text="💧 Наливные полы",  callback_data="floor:self_leveling")],
+        [InlineKeyboardButton(text="🧱 Бетонные полы",   callback_data="floor:concrete")],
+        [InlineKeyboardButton(text="💧 Наливные полы",   callback_data="floor:self_leveling")],
         [InlineKeyboardButton(text="🪵 Деревянные полы", callback_data="floor:wooden")],
+        [InlineKeyboardButton(text="🤖 AI Ассистент",    callback_data="ai_assistant")],
     ])
 
 
@@ -45,4 +46,12 @@ def consultation_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="📲 Бесплатная консультация", url=WHATSAPP_LINK)],
         [InlineKeyboardButton(text="🔙 Главное меню", callback_data="menu")],
+    ])
+
+
+def ai_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔄 Новый диалог",            callback_data="ai_reset")],
+        [InlineKeyboardButton(text="📲 Бесплатная консультация", url=WHATSAPP_LINK)],
+        [InlineKeyboardButton(text="🔙 Главное меню",            callback_data="menu")],
     ])

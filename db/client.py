@@ -49,3 +49,33 @@ async def get_material_prices(category: str) -> list[dict]:
         .execute()
     )
     return result.data
+
+
+def load_conversation(user_id: int) -> list[dict]:
+    """Загружает историю диалога пользователя из Supabase."""
+    client = get_client()
+    result = (
+        client.table("conversations")
+        .select("messages")
+        .eq("user_id", user_id)
+        .limit(1)
+        .execute()
+    )
+    if result.data:
+        return result.data[0]["messages"]
+    return []
+
+
+def save_conversation(user_id: int, messages: list[dict]) -> None:
+    """Сохраняет историю диалога (upsert по user_id)."""
+    client = get_client()
+    client.table("conversations").upsert(
+        {"user_id": user_id, "messages": messages},
+        on_conflict="user_id",
+    ).execute()
+
+
+def clear_conversation(user_id: int) -> None:
+    """Сбрасывает историю диалога пользователя."""
+    client = get_client()
+    client.table("conversations").delete().eq("user_id", user_id).execute()

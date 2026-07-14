@@ -6,7 +6,7 @@ from aiogram.types import ErrorEvent
 
 import utils.logger as logger
 from config import BOT_TOKEN, validate_env
-from handlers import concrete, self_leveling, start, wooden
+from handlers import ai_assistant, concrete, self_leveling, start, wooden
 from middlewares.throttling import ThrottlingMiddleware
 
 
@@ -25,6 +25,7 @@ async def main():
     dp.include_router(concrete.router)
     dp.include_router(self_leveling.router)
     dp.include_router(wooden.router)
+    dp.include_router(ai_assistant.router)
 
     @dp.error()
     async def error_handler(event: ErrorEvent):
